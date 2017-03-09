@@ -1,0 +1,55 @@
+server {
+    listen ${SERVER_PORT};
+    server_name ${SERVER_NAME};
+    return 301 https://${SERVER_NAME}$request_uri;
+}
+
+server {
+    listen ${SERVER_SECURE_PORT};
+    server_name ${SERVER_NAME} www.${SERVER_NAME} ${SERVER_ALIAS};
+    root ${DOCUMENT_ROOT};
+
+    ssl_certificate /etc/nginx/server.crt;
+    ssl_certificate_key /etc/nginx/server.key;
+
+    ssl on;
+    ssl_session_cache  builtin:1000  shared:SSL:10m;
+    ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+    ssl_prefer_server_ciphers on;
+
+    index index.php index.html;
+
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$uri;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    access_log off;
+    error_log  /app/server/log/error.log;
+
+    sendfile off;
+    open_file_cache off;
+    client_max_body_size 100m;
+
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php:${PHP_PORT};
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param  PHP_VALUE  "${INCLUDE_PATH}";
+        fastcgi_intercept_errors off;
+        fastcgi_buffer_size 16k;
+        fastcgi_buffers 4 16k;
+
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
