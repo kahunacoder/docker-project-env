@@ -24,14 +24,14 @@ php:
         - app
 
 app:
-    image: php:7.0-fpm
+    image: php:fpm
     volumes:
         - ./app/:/app
     working_dir: /app
     command: "true"
 
 mysql:
-    image: mysql:5.6
+    image: mysql:latest
     volumes:
         - ./docker/data:/docker-entrypoint-initdb.d
     volumes_from:
@@ -41,13 +41,13 @@ mysql:
     env_file: ./app/.env
 
 data:
-    image: mysql:5.6
+    image: mysql:latest
     volumes:
         - /var/lib/mysql
     command: "true"
 
 composer:
-    image: composer/composer:master
+    image: composer/composer:latest
     volumes_from:
         - app
     working_dir: /app
