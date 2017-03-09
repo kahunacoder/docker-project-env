@@ -38,6 +38,15 @@ $row = mysqli_fetch_array($query_result);
 if($row != FALSE){
 	echo "<li>Database version: <strong>{$row[0]}</strong></li>";
 }
+$result = mysqli_query($connection, "SHOW TABLES");
+$tables=array();
+while($tableName = mysqli_fetch_row($result)) {
+    $tables[] = $tableName[0];
+}
+if(!empty($tables)){
+	$show_tables=implode(", ", $tables);
+	echo "<li>Database tables: <strong>{$show_tables}</strong></li>";
+}
 
 mysqli_free_result($query_result);
 mysqli_close($connection);

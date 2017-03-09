@@ -1,1 +1,5 @@
 /app/.env
+/app/server
+/app/vendor
+/app/composer.lock
+/docker/nginx/conf/default.conf
